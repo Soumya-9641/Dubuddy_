@@ -1,0 +1,18 @@
+{
+  "name": "Fruit",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "size",
+      "type": "number"
+    },
+    {
+      "name": "class",
+      "type": "string"
+    }
+  ]
+}
