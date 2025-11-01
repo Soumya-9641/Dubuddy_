@@ -29,6 +29,3 @@ export const User = sequelize.define("User", {
     defaultValue: "viewer",
   },
 });
-
-// ✅ This ensures table stays updated with model fields
-//  User.sync({ alter: true });

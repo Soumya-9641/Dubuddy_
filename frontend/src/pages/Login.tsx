@@ -61,7 +61,7 @@ const AuthPage: React.FC = () => {
           isLogin ? "md:flex-row-reverse" : ""
         }`}
       >
-        {/* Left/Right side - Form */}
+      
         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <h2 className="text-3xl font-bold text-center text-teal-400 mb-8 drop-shadow-[0_0_6px_rgba(45,212,191,0.6)]">
             {isLogin ? "🔐 Welcome Back" : "🚀 Create Your Account"}
@@ -131,7 +131,6 @@ const AuthPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Right Side Image */}
         <div className="w-full md:w-1/2">
           <img
             src="https://images.unsplash.com/photo-1587614203976-365c74645e83?auto=format&fit=crop&w=1000&q=80"

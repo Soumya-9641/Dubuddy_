@@ -32,8 +32,8 @@ import authRoutes from "./routes/authRoutes";
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // your frontend URL
-    credentials: true,               // allow cookies if needed
+    origin: "http://localhost:3000", 
+    credentials: true,          
   })
 );
 app.use(bodyParser.json());

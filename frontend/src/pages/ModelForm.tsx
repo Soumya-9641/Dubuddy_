@@ -83,7 +83,7 @@ const ModelForm: React.FC = () => {
 
       const data = await res.json();
       alert(`✅ Model "${modelName}" created successfully! Redirecting...`);
-       // ✅ Add a short delay before navigating
+      
     setTimeout(() => {
       navigate("/", { state: { refresh: true } });
     }, 2000);
@@ -100,7 +100,7 @@ const ModelForm: React.FC = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Model Name */}
+        
           <div>
             <label className="font-semibold block mb-2 text-gray-300">Model Name:</label>
             <input
@@ -113,7 +113,7 @@ const ModelForm: React.FC = () => {
             />
           </div>
 
-          {/* RBAC Section */}
+         
           <div>
             <h3 className="font-semibold text-lg mb-3 text-teal-300">
               🔐 Role-Based Access Control
@@ -151,7 +151,6 @@ const ModelForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Fields Section */}
           <div>
             <h3 className="font-semibold text-lg mb-3 text-teal-300">📦 Fields</h3>
             {fields.map((field, index) => (
@@ -203,7 +202,7 @@ const ModelForm: React.FC = () => {
             </button>
           </div>
 
-          {/* Submit */}
+       
           <div className="text-center">
             <button
               type="submit"

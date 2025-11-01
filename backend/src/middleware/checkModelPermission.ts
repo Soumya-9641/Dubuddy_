@@ -8,8 +8,7 @@ export const checkModelPermission = (modelName: string,
 action: "create" | "read" | "update" | "delete") => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-     // const modelName = req.params.modelName || req.body.modelName;
-      //console.log(modelName);
+    
       const userRole = (req as any).user?.role;
       console.log(userRole);
 
@@ -32,7 +31,6 @@ action: "create" | "read" | "update" | "delete") => {
       const allowedActions = matchedRoleKey ? permissions[matchedRoleKey] : [];
       console.log("✅ Allowed actions:", allowedActions);
 
-      // ✅ If "all" is specified, grant full access
       if (allowedActions.includes("all") || allowedActions.includes(action)) {
         return next();
       }

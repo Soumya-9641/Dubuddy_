@@ -2,27 +2,9 @@
   "name": "Employee",
   "fields": [
     {
-      "name": "empid",
-      "type": "number",
-      "required": true,
-      "defaultValue": ""
-    },
-    {
       "name": "name",
       "type": "string",
       "required": true,
-      "defaultValue": ""
-    },
-    {
-      "name": "department",
-      "type": "string",
-      "required": true,
-      "defaultValue": ""
-    },
-    {
-      "name": "salary",
-      "type": "string",
-      "required": false,
       "defaultValue": ""
     }
   ],
@@ -31,13 +13,11 @@
       "all"
     ],
     "Manager": [
-      "delete",
       "update",
       "read"
     ],
     "Viewer": [
-      "read",
-      "update"
+      "read"
     ]
   }
 }

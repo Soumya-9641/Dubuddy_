@@ -30,16 +30,16 @@ const HomePage: React.FC = () => {
     }
   };
 
-  // ✅ 1. Always fetch models on mount
+ 
   useEffect(() => {
     fetchModels();
   }, []);
 
-  // ✅ 2. Handle refresh redirect
+  
   useEffect(() => {
     if (location.state?.refresh) {
       fetchModels();
-      navigate(location.pathname, { replace: true, state: {} }); // clear the refresh flag
+      navigate(location.pathname, { replace: true, state: {} }); 
     }
   }, [location, navigate, token]);
 
@@ -87,7 +87,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900 text-gray-100 flex flex-col items-center py-20 px-4">
-      {/* 🔹 Header Section */}
+  
       <div className="w-full max-w-5xl flex justify-between items-center mb-10">
         <h2 className="text-3xl font-bold text-center text-teal-400 mb-8 drop-shadow-[0_0_5px_rgba(45,212,191,0.6)]">
           Available Models
@@ -101,7 +101,6 @@ const HomePage: React.FC = () => {
         </button>
       </div>
 
-      {/* 🔹 Models Grid */}
       {models.length === 0 ? (
         <p className="text-gray-300 text-lg">No models found.</p>
       ) : (
@@ -112,13 +111,13 @@ const HomePage: React.FC = () => {
               to={`/model/${model.name}`}
               className="group relative bg-slate-800/60 hover:bg-slate-700/80 backdrop-blur-md border border-slate-700 hover:border-cyan-400 rounded-2xl shadow-lg transition-all duration-300 p-5 flex flex-col justify-between w-[280px] mx-auto"
             >
-              {/* Top Section */}
+           
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-cyan-300 group-hover:text-cyan-400 transition">
                   {model.name}
                 </h3>
 
-                {/* 🗑️ Delete icon */}
+                
                 {user?.role === "admin" && (
                   <button
                     onClick={(e) => {
@@ -133,7 +132,6 @@ const HomePage: React.FC = () => {
                 )}
               </div>
 
-              {/* Middle Section */}
               <div className="text-gray-300 text-sm space-y-1">
                 <p>{model.fields?.length || 0} fields</p>
                 <p

@@ -168,7 +168,7 @@ const ModelDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900 text-gray-100 flex flex-col items-center py-20 px-4">
-      {/* 🔹 Header Section */}
+     
       <div className="w-full max-w-5xl flex justify-between items-center mb-10">
         <h2 className="text-3xl font-bold text-center text-teal-400 mb-8 drop-shadow-[0_0_5px_rgba(45,212,191,0.6)]">
           Model: {name}
@@ -189,7 +189,7 @@ const ModelDetails: React.FC = () => {
         </div>
       </div>
 
-      {/* 🔹 Table Section */}
+
       {fields.length === 0 ? (
         <p className="text-gray-400 text-lg">No fields defined.</p>
       ) : (
@@ -241,7 +241,7 @@ const ModelDetails: React.FC = () => {
         </div>
       )}
 
-      {/* 🪟 Modal */}
+      
       {isModalOpen && editingField && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-xl w-96 text-white relative">

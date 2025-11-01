@@ -13,7 +13,7 @@ interface AuthContextType {
   logout: () => void;
 }
 interface JWTPayload {
-  exp: number; // expiration time in seconds
+  exp: number; 
   iat: number;
   [key: string]: any;
 }
@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // Load user/token from localStorage on mount
+
  useEffect(() => {
   const storedToken = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user");
@@ -35,11 +35,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const now = Date.now() / 1000;
 
       if (decoded.exp > now) {
-        // ✅ Token still valid — restore session
+        
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
 
-        // 🕒 Schedule auto logout when token expires
+      
         const timeLeft = (decoded.exp - now) * 1000;
         const timer = setTimeout(() => {
           alert("⚠️ Session expired. Please log in again.");
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         return () => clearTimeout(timer);
       } else {
-        // ❌ Token expired — force logout
+      
         console.warn("Token expired, logging out");
         logout();
       }
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// Custom hook for convenience
+
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside AuthProvider");

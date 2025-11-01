@@ -6,7 +6,6 @@ import { ModelDefinition } from "../types/modelDefinition";
 
 const dynamicModelPath = path.join(__dirname, "../dynamicModels");
 
-// ✅ Ensure directory exists before scanning
 if (!fs.existsSync(dynamicModelPath)) {
   fs.mkdirSync(dynamicModelPath, { recursive: true });
   console.log("🆕 Created directory:", dynamicModelPath);
@@ -17,7 +16,6 @@ export const loadDynamicModels = async (): Promise<
 > => {
   const models: Record<string, ModelStatic<Model>> = {};
 
-  // ✅ Safely read directory contents
   const files = fs.existsSync(dynamicModelPath)
     ? fs.readdirSync(dynamicModelPath)
     : [];
@@ -39,7 +37,7 @@ export const loadDynamicModels = async (): Promise<
 
       const attributes: any = {};
 
-      // ✅ Use your improved switch-based mapping logic
+   
       modelData.fields.forEach((field: any) => {
         const attr: any = {};
 
@@ -87,12 +85,12 @@ export const loadDynamicModels = async (): Promise<
         timestamps: true,
       });
 
-      await model.sync({ alter: true }); // ✅ Auto-create table
+      await model.sync({ alter: true }); 
       models[modelData.name] = model;
 
       console.log(`✅ Model "${modelData.name}" loaded & table synced`);
     } catch (err: any) {
-      console.error(`❌ Failed to load model from file: ${file}`, err.message);
+      console.error(`❌ Failed to load model from file: ${file}`, err);
     }
   }
 
