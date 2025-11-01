@@ -21,8 +21,16 @@ export const register = async (req: Request, res: Response) => {
       password: hashedPassword,
       role: role || "viewer",
     });
+     const userData = {
+      
+     username,
+      email,
+      
+      role: role || "viewer",
+    };
 
-    res.status(201).json({ message: "User registered successfully", user: newUser });
+
+    res.status(201).json({ message: "User registered successfully", user: userData });
   } catch (error) {
     console.error("Register Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -49,8 +57,14 @@ export const login = async (req: Request, res: Response) => {
       JWT_SECRET,
       { expiresIn: "2h" }
     );
+     const userData = {
+      
+      username: user.getDataValue("username"),
+      email: user.getDataValue("email"),
+      role: user.getDataValue("role"),
+    };
 
-    res.json({ token, role: user.getDataValue("role") });
+    res.json({ token,user:userData, role: user.getDataValue("role") });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ message: "Internal Server Error" });

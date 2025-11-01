@@ -1,11 +1,12 @@
 import express from "express";
 import { Model, ModelStatic } from "sequelize";
-
+import { checkModelPermission } from "../middleware/checkModelPermission";
+import { verifyToken } from "../middleware/authMiddleware";
 export const createCrudRouter = <T extends Model>(model: ModelStatic<T>, modelName: string) => {
   const router = express.Router();
 
   // Create
-  router.post("/", async (req, res) => {
+  router.post("/", verifyToken,checkModelPermission(modelName,"create"), async (req, res) => {
     try {
       const item = await model.create(req.body);
       res.json(item);
@@ -18,7 +19,7 @@ export const createCrudRouter = <T extends Model>(model: ModelStatic<T>, modelNa
   });
 
   // Read All
-  router.get("/", async (req, res) => {
+  router.get("/", verifyToken,checkModelPermission(modelName,"read"),async (req, res) => {
     try {
       const items = await model.findAll();
       res.json(items);
@@ -28,7 +29,7 @@ export const createCrudRouter = <T extends Model>(model: ModelStatic<T>, modelNa
   });
 
   // Read One
-  router.get("/:id", async (req, res) => {
+  router.get("/:id",verifyToken, checkModelPermission(modelName,"read"), async (req, res) => {
     try {
       const item = await model.findByPk(req.params.id);
       res.json(item);
@@ -38,7 +39,7 @@ export const createCrudRouter = <T extends Model>(model: ModelStatic<T>, modelNa
   });
 
   // Update
-  router.put("/:id", async (req, res) => {
+  router.put("/:id",verifyToken,checkModelPermission(modelName,"update"), async (req, res) => {
     try {
       const item = await model.findByPk(req.params.id);
       if (!item) return res.status(404).json({ message: "Not found" });
@@ -51,7 +52,7 @@ export const createCrudRouter = <T extends Model>(model: ModelStatic<T>, modelNa
   });
 
   // Delete
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", verifyToken, checkModelPermission(modelName,"delete"),async (req, res) => {
     try {
       const item = await model.findByPk(req.params.id);
       if (!item) return res.status(404).json({ message: "Not found" });

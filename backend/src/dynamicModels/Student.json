@@ -1,12 +1,6 @@
 {
-  "name": "Employee",
+  "name": "Student",
   "fields": [
-    {
-      "name": "empid",
-      "type": "number",
-      "required": true,
-      "defaultValue": ""
-    },
     {
       "name": "name",
       "type": "string",
@@ -14,30 +8,29 @@
       "defaultValue": ""
     },
     {
-      "name": "department",
-      "type": "string",
+      "name": "roll no",
+      "type": "number",
       "required": true,
       "defaultValue": ""
     },
     {
-      "name": "salary",
-      "type": "string",
-      "required": false,
+      "name": "class",
+      "type": "number",
+      "required": true,
       "defaultValue": ""
     }
   ],
+  "ownerField": "ownerId",
   "rbac": {
     "Admin": [
       "all"
     ],
     "Manager": [
-      "delete",
       "update",
       "read"
     ],
     "Viewer": [
-      "read",
-      "update"
+      "read"
     ]
   }
 }

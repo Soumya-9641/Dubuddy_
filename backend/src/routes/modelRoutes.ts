@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import { loadDynamicModels } from "../model/dynamicModelLoader";
 import { verifyToken, authorizeRoles } from "../middleware/authMiddleware";
-import { DataTypes } from "sequelize";
+import { DataTypes, ModelAttributes, ModelAttributeColumnOptions } from "sequelize";
 import { sequelize } from "../config/database";
 const router = express.Router();
 
@@ -40,17 +40,108 @@ router.post(
   }
 );
 
+interface Field {
+  name: string;
+  type: string;
+  required: boolean;
+  defaultValue?: string | number | null;
+}
 
+interface ModelDefinition {
+  name: string;
+  fields: Field[];
+  ownerField: string;
+  rbac: Record<string, string[]>;
+}
 // ✅ UPDATE MODEL — only admin
-router.put("/update-model/:name", verifyToken, authorizeRoles("admin"), (req, res) => {
-  const modelName = req.params.name;
-  const filePath = path.join(dynamicModelPath, `${modelName}.json`);
-  if (!fs.existsSync(filePath))
-    return res.status(404).json({ message: "Model not found" });
 
-  fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2));
-  res.json({ message: "Model updated successfully" });
-});
+router.put(
+  "/update-model/:name",
+  verifyToken,
+  authorizeRoles("admin"),
+  async (req: Request, res: Response) => {
+    try {
+      const modelName = req.params.name.trim();
+      const modelFiles = fs.readdirSync(dynamicModelPath);
+      const modelFile = modelFiles.find(
+        (file) => file.toLowerCase() === `${modelName.toLowerCase()}.json`
+      );
+
+      if (!modelFile) {
+        return res.status(404).json({ message: "Model not found" });
+      }
+
+      const filePath = path.join(dynamicModelPath, modelFile);
+      const updatedData: ModelDefinition = req.body;
+
+      // 🧹 Sanitize invalid defaults (fix ER_INVALID_DEFAULT)
+      updatedData.fields = updatedData.fields.map((field) => {
+        if (
+          ["integer", "number", "float", "double"].includes(
+            field.type.toLowerCase()
+          )
+        ) {
+          if (field.defaultValue === "" || field.defaultValue === null) {
+            delete field.defaultValue;
+          } else {
+            field.defaultValue = Number(field.defaultValue);
+          }
+        }
+        return field;
+      });
+
+      // ✅ Step 1: Update JSON file properly (overwrite same case file)
+      fs.writeFileSync(filePath, JSON.stringify(updatedData, null, 2));
+      console.log(`📄 Model JSON "${modelFile}" updated.`);
+
+      // ✅ Step 2: Build Sequelize attributes dynamically
+      const attributes: ModelAttributes = {};
+      updatedData.fields.forEach((field) => {
+        const attr: any = {};
+
+        switch (field.type.toLowerCase()) {
+          case "string":
+            attr.type = DataTypes.STRING;
+            break;
+          case "number":
+          case "integer":
+            attr.type = DataTypes.INTEGER;
+            break;
+          case "boolean":
+            attr.type = DataTypes.BOOLEAN;
+            break;
+          default:
+            attr.type = DataTypes.STRING;
+        }
+
+        attr.allowNull = !field.required;
+        if (field.defaultValue !== undefined) attr.defaultValue = field.defaultValue;
+
+        attributes[field.name.trim()] = attr;
+      });
+
+      // ✅ Step 3: Define and sync model
+      const model = sequelize.define(updatedData.name, attributes, {
+        tableName: updatedData.name.toLowerCase() + "s",
+        timestamps: true,
+      });
+
+      await model.sync({ alter: true });
+      console.log(`✅ Table "${updatedData.name}" updated and synced.`);
+
+      res.json({
+        message: `Model "${updatedData.name}" updated successfully and synced with database.`,
+      });
+    } catch (error: any) {
+      console.error("❌ Error updating model:", error);
+      res.status(500).json({
+        message: "Error updating model",
+        error: error.message,
+      });
+    }
+  }
+);
+
 
 // ✅ DELETE MODEL — only admin
 router.delete("/delete-model/:name", verifyToken, authorizeRoles("admin"), async(req, res) => {
@@ -102,4 +193,82 @@ router.get("/models", verifyToken, authorizeRoles("admin", "manager", "viewer"),
   res.json(models);
 });
 
+
+router.get("/get-models", async (req: Request, res: Response) => {
+  try {
+    const modelFiles = fs.readdirSync(dynamicModelPath).filter(file => file.endsWith(".json"));
+
+    const models: any[] = [];
+
+    for (const file of modelFiles) {
+      const modelDef = JSON.parse(fs.readFileSync(path.join(dynamicModelPath, file), "utf-8"));
+      const tableName = modelDef.name.toLowerCase() + "s";
+
+      // ✅ Check if the table exists in the database
+      const [results] = await sequelize.query(
+        `SHOW TABLES LIKE '${tableName}';`
+      );
+
+      models.push({
+        name: modelDef.name,
+        fields: modelDef.fields,
+        existsInDatabase: (results as any[]).length > 0,
+      });
+    }
+
+    return res.status(200).json({
+      message: "All models fetched successfully",
+      total: models.length,
+      models,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching models:", error);
+    return res.status(500).json({ message: "Failed to fetch models" });
+  }
+});
+router.get("/get-model/:name",verifyToken, authorizeRoles("admin", "manager", "viewer"), async (req: Request, res: Response) => {
+  try {
+    const { name } = req.params;
+
+    // Locate JSON definition file (case-insensitive match)
+    const modelFile = fs
+      .readdirSync(dynamicModelPath)
+      .find((file) => file.toLowerCase() === `${name.toLowerCase()}.json`);
+
+    if (!modelFile) {
+      return res.status(404).json({ message: "Model not found" });
+    }
+
+    // Read model definition
+    const modelDef = JSON.parse(
+      fs.readFileSync(path.join(dynamicModelPath, modelFile), "utf-8")
+    );
+
+    const tableName = modelDef.name.toLowerCase() + "s";
+
+    // ✅ Check if table exists in the database
+    const [results] = await sequelize.query(`SHOW TABLES LIKE '${tableName}';`);
+    const existsInDatabase = (results as any[]).length > 0;
+
+    // ✅ Optionally, fetch sample rows if table exists
+    let records: any[] = [];
+    if (existsInDatabase) {
+      const [rows] = await sequelize.query(`SELECT * FROM ${tableName} LIMIT 5;`);
+      records = rows as any[];
+    }
+
+    return res.status(200).json({
+      message: "Model fetched successfully",
+      model: {
+        name: modelDef.name,
+        fields: modelDef.fields,
+        existsInDatabase,
+        sampleRecords: records,
+      },
+    });
+  } catch (error) {
+    console.error("❌ Error fetching model:", error);
+    return res.status(500).json({ message: "Failed to fetch model" });
+  }
+});
 export default router;

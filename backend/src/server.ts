@@ -1,5 +1,5 @@
 // import express from "express";
-// import cors from "cors";
+ import cors from "cors";
 // import dotenv from "dotenv";
 // import { connectDB, sequelize } from "./config/database";
 // import authRoutes from "./routes/authRoutes";
@@ -22,7 +22,7 @@
 // const PORT = process.env.PORT || 5000;
 // app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 import express from "express";
-import bodyParser from "body-parser";
+import bodyParser from "body-parser"; 
 import { sequelize } from "./config/database";
 import { loadDynamicModels } from "./model/dynamicModelLoader";
 import { createCrudRouter } from "./routes/dynamicCrudRouter";
@@ -30,6 +30,12 @@ import modelRoutes from "./routes/modelRoutes";
 import authRoutes from "./routes/authRoutes";
 
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000", // your frontend URL
+    credentials: true,               // allow cookies if needed
+  })
+);
 app.use(bodyParser.json());
 
 app.use("/api/models", modelRoutes);
@@ -46,5 +52,6 @@ app.use("/api/auth", authRoutes);
     console.log(`🛠️ Registered routes for /api/${name.toLowerCase()}s`);
   }
 
-  app.listen(3000, () => console.log("🚀 Server running on port 3000"));
+  app.listen(5000, () => console.log("🚀 Server running on port 5000"));
 })();
+

@@ -1,18 +1,17 @@
 {
-  "name": "Fruit",
+  "name": "fruit",
   "fields": [
     {
       "name": "name",
       "type": "string",
-      "required": true
+      "required": true,
+      "defaultValue": ""
     },
     {
-      "name": "size",
-      "type": "number"
-    },
-    {
-      "name": "class",
-      "type": "string"
+      "name": "color",
+      "type": "string",
+      "required": true,
+      "defaultValue": "red"
     }
   ]
 }
