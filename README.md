@@ -1,6 +1,6 @@
 # 🧠 DUBUDDY — Dynamic Model Management Platform
 
-**DUBUDDY** is a low-code dynamic model management platform that lets you create database models and instantly generate API endpoints — all from a simple UI.  
+This is a assignment of  dynamic model management platform that lets you create database models and instantly generate API endpoints — all from a simple UI.  
 It includes **role-based access control (RBAC)**, automatic **Sequelize model creation**, and **live MySQL synchronization**.
 
 ---
